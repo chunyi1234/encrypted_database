@@ -17,12 +17,12 @@ class FASTIOServer:
         self.T_e[u] = e
 
     def search_server_part(self, t_w: bytes, k_w: bytes | None, c: int) -> Set[bytes]:
-        ID: Set[bytes] = set()
         try:
-            ID.union(self.T_c[t_w])
+            ID: Set[bytes] = self.T_c[t_w]
         except Exception as ex:
             if str(ex) != "key not found":
                 raise ex
+            ID = set()
 
         if k_w is None:
             return ID

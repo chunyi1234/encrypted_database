@@ -33,7 +33,7 @@ class FASTIOClient:
 
         return u, e
 
-    def search_client_part(self, w) -> Tuple[bytes, bytes | None, int] | None:
+    def search_client_part(self, w: bytes) -> Tuple[bytes, bytes | None, int] | None:
         try:
             st, c = self.Sigma[w]
         except Exception as ex:

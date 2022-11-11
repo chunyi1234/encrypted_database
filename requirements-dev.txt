@@ -1,10 +1,10 @@
 black
-
 cryptography
 flake8
 isort
 mypy
 pre-commit
+pytest
 rocksdict
 setuptools
 tox
