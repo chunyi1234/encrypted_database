@@ -1,7 +1,11 @@
 black
+
+cryptography
 flake8
 isort
+mypy
 pre-commit
+rocksdict
 setuptools
 tox
 wheel
