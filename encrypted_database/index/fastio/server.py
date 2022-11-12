@@ -8,7 +8,7 @@ from .op import Opterator
 from .utils import uint_to_bytes, xor_bytes
 
 
-class FASTIOServer:
+class FASTIOServerPart:
     def __init__(self, T_e: Rdict, T_c: Rdict) -> None:
         self.T_e = T_e
         self.T_c = T_c

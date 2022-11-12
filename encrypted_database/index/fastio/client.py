@@ -9,7 +9,7 @@ from .op import Opterator
 from .utils import uint_to_bytes, xor_bytes
 
 
-class FASTIOClient:
+class FASTIOClientPart:
     def __init__(self, Sigma: Rdict, k_s: bytes) -> None:
         self.k_s = k_s
         self.Sigma = Sigma

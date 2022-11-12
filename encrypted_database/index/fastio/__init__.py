@@ -1,5 +1,5 @@
-from .client import FASTIOClient
+from .client import FASTIOClientPart
 from .op import Opterator
-from .server import FASTIOServer
+from .server import FASTIOServerPart
 
-__all__ = ["FASTIOClient", "FASTIOServer", "Opterator"]
+__all__ = ["FASTIOClientPart", "FASTIOServerPart", "Opterator"]
