@@ -1,20 +1,18 @@
 import pickle
 
-from rocksdict import Rdict
+from encrypted_database.storage import Storage
 
 from ..fastio import FASTIOClientPart, Opterator
 from .utils import get_bin_prefixs, get_BRC
 
 
 class RangeIndexClientPart:
-    def __init__(
-        self, storage: Rdict, cf_prefix: str, key: bytes, m: int, new: bool
-    ) -> None:
+    def __init__(self, storage: Storage, key: bytes, m: int, new: bool) -> None:
         if new:
-            self.Sigma = storage.create_column_family(cf_prefix + ":" + "Sigma")
+            Sigma = storage.create_map("Sigma")
         else:
-            self.Sigma = storage.get_column_family(cf_prefix + ":" + "Sigma")
-        self.fastio_client = FASTIOClientPart(self.Sigma, key)
+            Sigma = storage.get_map("Sigma")
+        self.fastio_client = FASTIOClientPart(Sigma, key)
         self.m = m
 
     def gen_insert_msg(self, ind: bytes, value: int) -> bytes:
@@ -47,6 +45,3 @@ class RangeIndexClientPart:
                 msgs.append(msg)
 
         return pickle.dumps(msgs)
-
-    def close(self) -> None:
-        self.Sigma.close()

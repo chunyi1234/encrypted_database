@@ -1,17 +1,17 @@
 import pickle
 
-from rocksdict import Rdict
+from encrypted_database.storage import Storage
 
 from ..fastio import FASTIOClientPart, Opterator
 
 
 class PointIndexClientPart:
-    def __init__(self, storage: Rdict, cf_prefix: str, key: bytes, new: bool) -> None:
+    def __init__(self, storage: Storage, key: bytes, new: bool) -> None:
         if new:
-            self.Sigma = storage.create_column_family(cf_prefix + ":" + "Sigma")
+            Sigma = storage.create_map("Sigma")
         else:
-            self.Sigma = storage.get_column_family(cf_prefix + ":" + "Sigma")
-        self.fastio_client = FASTIOClientPart(self.Sigma, key)
+            Sigma = storage.get_map("Sigma")
+        self.fastio_client = FASTIOClientPart(Sigma, key)
 
     def gen_insert_msg(self, ind, w) -> bytes:
         msg = self.fastio_client.update_client_part(ind, pickle.dumps(w), Opterator.ADD)
@@ -30,6 +30,3 @@ class PointIndexClientPart:
             return None
         else:
             return pickle.dumps(msg)
-
-    def close(self) -> None:
-        self.Sigma.close()

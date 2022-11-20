@@ -1,15 +1,14 @@
 import itertools
 from typing import Set
 
-from rocksdict import Rdict
-
+from ...storage import Map
 from .crypto import H1, H2
 from .op import Opterator
 from .utils import uint_to_bytes, xor_bytes
 
 
 class FASTIOServerPart:
-    def __init__(self, T_e: Rdict, T_c: Rdict) -> None:
+    def __init__(self, T_e: Map, T_c: Map) -> None:
         self.T_e = T_e
         self.T_c = T_c
 

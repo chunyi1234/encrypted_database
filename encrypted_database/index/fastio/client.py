@@ -2,7 +2,7 @@ import itertools
 import os
 from typing import Tuple
 
-from rocksdict import Rdict
+from encrypted_database.storage import Map
 
 from .crypto import H1, H2, F, h
 from .op import Opterator
@@ -10,7 +10,7 @@ from .utils import uint_to_bytes, xor_bytes
 
 
 class FASTIOClientPart:
-    def __init__(self, Sigma: Rdict, k_s: bytes) -> None:
+    def __init__(self, Sigma: Map, k_s: bytes) -> None:
         self.k_s = k_s
         self.Sigma = Sigma
 

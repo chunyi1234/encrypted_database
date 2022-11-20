@@ -1,19 +1,19 @@
 import pickle
 from typing import Set
 
-from rocksdict import Rdict
+from encrypted_database.storage import Storage
 
 from ..fastio import FASTIOServerPart
 
 
 class RangeIndexServerPart:
-    def __init__(self, storage: Rdict, cf_prefix: str, new: bool) -> None:
+    def __init__(self, storage: Storage, new: bool) -> None:
         if new:
-            self.T_e = storage.create_column_family(cf_prefix + ":" + "T_e")
-            self.T_c = storage.create_column_family(cf_prefix + ":" + "T_c")
+            self.T_e = storage.create_map("T_e")
+            self.T_c = storage.create_map("T_c")
         else:
-            self.T_e = storage.get_column_family(cf_prefix + ":" + "T_e")
-            self.T_c = storage.get_column_family(cf_prefix + ":" + "T_c")
+            self.T_e = storage.get_map("T_e")
+            self.T_c = storage.get_map("T_c")
         self.fastio_server = FASTIOServerPart(self.T_e, self.T_c)
 
     def update_by_msg(self, msg: bytes):
