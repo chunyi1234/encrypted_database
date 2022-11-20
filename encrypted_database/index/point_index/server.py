@@ -7,7 +7,7 @@ from ..fastio import FASTIOServerPart
 
 
 class PointIndexServerPart:
-    def __init__(self, storage: Storage, new: bool) -> None:
+    def __init__(self, storage: Storage, new: bool = False) -> None:
         if new:
             self.T_e = storage.create_map("T_e")
             self.T_c = storage.create_map("T_c")

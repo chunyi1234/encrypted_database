@@ -1,18 +1,19 @@
 import os
 
 import pytest
-from rocksdict import Rdict
+
+from encrypted_database.storage import RdictStorage
 
 from . import FASTIOClientPart, FASTIOServerPart, Opterator
 
 
 def test_fastio(tmp_path_factory: pytest.TempPathFactory):
     dir = tmp_path_factory.mktemp("data")
-    client_dict = Rdict(str(dir / "client_dict"))
-    Sigma = client_dict.create_column_family("Sigma")
-    server_dict = Rdict(str(dir / "server_dict"))
-    T_e = server_dict.create_column_family("T_e")
-    T_c = server_dict.create_column_family("T_c")
+    client_storage = RdictStorage(str(dir / "client_dict"))
+    Sigma = client_storage.create_map("Sigma")
+    server_storage = RdictStorage(str(dir / "server_dict"))
+    T_e = server_storage.create_map("T_e")
+    T_c = server_storage.create_map("T_c")
 
     k_s = os.urandom(16)
     client = FASTIOClientPart(Sigma, k_s)
@@ -36,17 +37,14 @@ def test_fastio(tmp_path_factory: pytest.TempPathFactory):
     scp = client.search_client_part(b"warn")
     assert scp is None
 
-    client_dict.close()
-    Sigma.close()
-    server_dict.close()
-    T_e.close()
-    T_c.close()
+    client_storage.close()
+    server_storage.close()
 
-    client_dict = Rdict(str(dir / "client_dict"))
-    Sigma = client_dict.get_column_family("Sigma")
-    server_dict = Rdict(str(dir / "server_dict"))
-    T_e = server_dict.get_column_family("T_e")
-    T_c = server_dict.get_column_family("T_c")
+    client_storage = RdictStorage(str(dir / "client_dict"))
+    Sigma = client_storage.get_map("Sigma")
+    server_storage = RdictStorage(str(dir / "server_dict"))
+    T_e = server_storage.get_map("T_e")
+    T_c = server_storage.get_map("T_c")
 
     client = FASTIOClientPart(Sigma, k_s)
     server = FASTIOServerPart(T_e, T_c)

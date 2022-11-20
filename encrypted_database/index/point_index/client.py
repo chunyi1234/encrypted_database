@@ -6,7 +6,7 @@ from ..fastio import FASTIOClientPart, Opterator
 
 
 class PointIndexClientPart:
-    def __init__(self, storage: Storage, key: bytes, new: bool) -> None:
+    def __init__(self, storage: Storage, key: bytes, new: bool = False) -> None:
         if new:
             Sigma = storage.create_map("Sigma")
         else:
@@ -24,7 +24,7 @@ class PointIndexClientPart:
         return pickle.dumps(msg)
 
     def gen_search_msg(self, w) -> bytes | None:
-        msg = self.fastio_client.search_client_part(w)
+        msg = self.fastio_client.search_client_part(pickle.dumps(w))
 
         if msg is None:
             return None

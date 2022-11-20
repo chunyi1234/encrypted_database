@@ -7,7 +7,7 @@ from .utils import get_bin_prefixs, get_BRC
 
 
 class RangeIndexClientPart:
-    def __init__(self, storage: Storage, key: bytes, m: int, new: bool) -> None:
+    def __init__(self, storage: Storage, key: bytes, m: int, new: bool = False) -> None:
         if new:
             Sigma = storage.create_map("Sigma")
         else:
@@ -37,7 +37,7 @@ class RangeIndexClientPart:
 
         return pickle.dumps(msgs)
 
-    def gen_update_msg(self, a: int, b: int) -> bytes:
+    def gen_search_msg(self, a: int, b: int) -> bytes:
         msgs = []
         for node in get_BRC(self.m, a, b):
             msg = self.fastio_client.search_client_part(pickle.dumps(node))
