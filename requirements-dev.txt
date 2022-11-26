@@ -1,10 +1,12 @@
 black
+bson
 cryptography
 flake8
 isort
 mypy
 pre-commit
 protobuf
+pymongo
 pytest
 rocksdict
 setuptools
