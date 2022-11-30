@@ -21,6 +21,14 @@ class Map(metaclass=ABCMeta):
     def __contains__(self, key: Key) -> bool:
         pass
 
+    @abstractmethod
+    def get(self, key: Key, default=None) -> Any:
+        pass
+
+    @abstractmethod
+    def keys(self) -> List[Key]:
+        pass
+
 
 class Storage(metaclass=ABCMeta):
     @abstractmethod

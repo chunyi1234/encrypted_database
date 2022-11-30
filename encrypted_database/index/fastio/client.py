@@ -19,9 +19,7 @@ class FASTIOClientPart:
     ) -> Tuple[bytes, bytes]:
         try:
             st, c = self.Sigma[w]
-        except Exception as ex:
-            if str(ex) != "key not found":
-                raise ex
+        except KeyError:
             st = os.urandom(16)
             c = 0
 
@@ -36,9 +34,7 @@ class FASTIOClientPart:
     def search_client_part(self, w: bytes) -> Tuple[bytes, bytes | None, int] | None:
         try:
             st, c = self.Sigma[w]
-        except Exception as ex:
-            if str(ex) != "key not found":
-                raise ex
+        except KeyError:
             return None
 
         t_w = F(self.k_s, h(w))

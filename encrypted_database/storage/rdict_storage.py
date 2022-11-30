@@ -13,9 +13,13 @@ def str_encode(input: str) -> str:
 
 class RdictStorage(Storage):
     def __init__(self, path: str) -> None:
+        try:
+            self._cf_names = Rdict.list_cf(path)
+        except Exception:
+            self._cf_names = []
         self._rdict = Rdict(path)
         self._namespaces: List[str] = []
-        self._cfs: Dict[str, Rdict] = {}
+        self._cf_map: Dict[str, Rdict] = {}
         self._prefix = ""
 
     def get_namespace(self, namespace: str):
@@ -23,8 +27,13 @@ class RdictStorage(Storage):
             raise Exception("namespace already exists")
         sub_storage = copy(self)
         sub_storage._namespaces = []
-        sub_storage._cfs = {}
-        sub_storage._prefix += ":" + str_encode(namespace)
+        sub_storage._cf_map = {}
+        prefix_added = ":" + str_encode(namespace)
+        sub_storage._prefix += prefix_added
+        sub_storage._cf_names = []
+        for cf_name in self._cf_names:
+            if cf_name.startswith(prefix_added):
+                sub_storage._cf_names.append(cf_name.removeprefix(prefix_added))
         self._namespaces.append(namespace)
         return sub_storage
 
@@ -32,31 +41,35 @@ class RdictStorage(Storage):
         return self._namespaces
 
     def names(self) -> List[str]:
-        return list(self._cfs.keys())
+        return list(self._cf_map.keys())
 
     def create_map(self, name: str) -> Map:
         cf_name = self._prefix + ":" + str_encode(name)
         rdict = self._rdict.create_column_family(cf_name)
-        self._cfs[name] = rdict
+        self._cf_map[name] = rdict
         return RdictMap(rdict)
 
     def get_map(self, name: str) -> Map:
-        if name in self._cfs.keys():
-            return self._cfs[name]
-        cf_name = self._prefix + ":" + str_encode(name)
-        rdict = self._rdict.get_column_family(cf_name)
-        self._cfs[name] = rdict
+        if name in self._cf_map.keys():
+            return RdictMap(self._cf_map[name])
+        cf_name_suffix = ":" + str_encode(name)
+        cf_name = self._prefix + cf_name_suffix
+        if cf_name_suffix in self._cf_names:
+            rdict = self._rdict.get_column_family(cf_name)
+        else:
+            rdict = self._rdict.create_column_family(cf_name)
+        self._cf_map[name] = rdict
         return RdictMap(rdict)
 
     def drop_map(self, name: str) -> None:
-        if name in self._cfs.keys():
-            self._cfs[name].close()
-            del self._cfs[name]
+        if name in self._cf_map.keys():
+            self._cf_map[name].close()
+            del self._cf_map[name]
         cf_name = self._prefix + ":" + str_encode(name)
         self._rdict.drop_column_family(cf_name)
 
     def close(self) -> None:
-        for cf in self._cfs.values():
+        for cf in self._cf_map.values():
             cf.close()
         if self._prefix == "":
             self._rdict.close()
@@ -70,10 +83,24 @@ class RdictMap(Map):
         self._rdict[key] = item
 
     def __getitem__(self, key: Key) -> Any:
-        return self._rdict[key]
+        try:
+            return self._rdict[key]
+        except Exception as ex:
+            if str(ex) == "key not found":
+                raise KeyError("key not found")
+            raise ex
 
     def __delitem__(self, key: Key):
         del self._rdict[key]
 
     def __contains__(self, key: Key) -> bool:
         return key in self._rdict
+
+    def get(self, key: Key, default=None) -> Any:
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def keys(self) -> List[Key]:
+        return list(self._rdict.keys())

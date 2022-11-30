@@ -18,9 +18,7 @@ class FASTIOServerPart:
     def search_server_part(self, t_w: bytes, k_w: bytes | None, c: int) -> Set[bytes]:
         try:
             ID: Set[bytes] = self.T_c[t_w]
-        except Exception as ex:
-            if str(ex) != "key not found":
-                raise ex
+        except KeyError:
             ID = set()
 
         if k_w is None:
